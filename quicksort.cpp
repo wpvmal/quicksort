@@ -17,9 +17,9 @@ using namespace this_thread;
 #define GREEN "\033[2K\033[38;2;103;228;128m\033[48;2;25;22;34m" START_LINE
 
 
-void sort(vector<string>&);
-void quicksort(vector<string>&, int, int);
-int partition(vector<string>&,int, int);
+void sort(vector<string>*);
+void quicksort(vector<string>*, int, int);
+void printLine(vector<string>*, int, string, int);
 
 int main(){
     SCREEN_CLEANER
@@ -43,58 +43,49 @@ int main(){
     }
 
     int end = names.size() - 1;
-    quicksort(names, 0, end);
+    quicksort(&names, 0, end);
     cout << endl;
 
     file.close();
     return 0;
 }
 
-void quicksort(vector<string>& names, int start, int end){
+void quicksort(vector<string>* names, int start, int end){
     int i = start;
     int j = end;
     string aux;
     int mid = (start + end) / 2;
-    string pivot = names[mid];
+    string pivot = (*names)[mid];
     
     while (i <= j){
-        sleep_for(chrono::milliseconds(150));
-        cout << "\033[" << (mid + 2) << ";100H" RED << pivot; cout.flush();
+        printLine(names, mid, RED, 150);
 
-        while (names[i] < pivot){  
-            sleep_for(chrono::milliseconds(100));
-            cout << "\033[" << (i + 2) << ";100H" YELLOW << names[i]; cout.flush();
-
-            sleep_for(chrono::milliseconds(200));
-            cout << "\033[" << (i + 2) << ";100H" WHITE << names[i]; cout.flush();
-
+        while ((*names)[i] < pivot){  
+            printLine(names, i, YELLOW, 100);
+            printLine(names, i, WHITE, 200);
             i++;
         }
-        while (names[j] > pivot){
-            sleep_for(chrono::milliseconds(100));
-            cout << "\033[" << (j + 2) << ";100H" BLUE << names[j]; cout.flush();
-
-            sleep_for(chrono::milliseconds(200));
-            cout << "\033[" << (j + 2) << ";100H" WHITE << names[j]; cout.flush();
-
+        while ((*names)[j] > pivot){
+            printLine(names, j, BLUE, 100);
+            printLine(names, j, WHITE, 200);
             j--;
         }
         if (i <= j){
-            cout << "\033[" << (i + 2) << ";100H" PINK << names[i]; cout.flush();
-            cout << "\033[" << (j + 2) << ";100H" GREEN << names[j]; cout.flush();
+            printLine(names, i, PINK, 0);
+            printLine(names, j, GREEN, 0);
             sleep_for(chrono::milliseconds(600));
 
-            aux = names[i];
-            names[i] = names[j];
-            names[j] = aux;
+            aux = (*names)[i];
+            (*names)[i] = (*names)[j];
+            (*names)[j] = aux;
 
-            cout << "\033[" << (i + 2) << ";100H" PINK << names[i]; cout.flush();
-            cout << "\033[" << (j + 2) << ";100H" GREEN << names[j]; cout.flush();
+            printLine(names, i, PINK, 0);
+            printLine(names, j, GREEN, 0);
 
             sleep_for(chrono::milliseconds(200));
 
-            cout << "\033[" << (i + 2) << ";100H" WHITE << names[i];
-            cout << "\033[" << (j + 2) << ";100H" WHITE << names[j];
+            printLine(names, i, WHITE, 0);
+            printLine(names, j, WHITE, 0);
 
             sleep_for(chrono::milliseconds(300));
             i++;
@@ -103,15 +94,16 @@ void quicksort(vector<string>& names, int start, int end){
     }
     sleep_for(chrono::milliseconds(150));
 
-    cout << "\033[" << (mid + 2) << ";100H" RED << names[mid]; cout.flush();
-    cout << "\033[" << (i + 1 + 2) << ";100H" PINK << names[i + 1]; cout.flush();
-    cout << "\033[" << (end + 2) << ";100H" GREEN << names[end]; cout.flush();
+    printLine(names, mid, RED, 0);
+    printLine(names, (i + 1), PINK, 0);
+    printLine(names, end, GREEN, 0);
 
     sleep_for(chrono::milliseconds(150));
 
-    cout << "\033[" << (mid + 2) << ";100H" WHITE << names[mid]; cout.flush();
-    cout << "\033[" << (i + 1 + 2) << ";100H" WHITE << names[i + 1]; cout.flush();
-    cout << "\033[" << (end + 2) << ";100H" WHITE << names[end]; cout.flush();
+
+    printLine(names, mid, WHITE, 0);
+    printLine(names, (i + 1), WHITE, 0);
+    printLine(names, end, WHITE, 0);
 
     if (start < j){
         quicksort(names, start, j);
@@ -119,4 +111,9 @@ void quicksort(vector<string>& names, int start, int end){
     if (i < end){
         quicksort(names, i, end);
     }
+}
+
+void printLine(vector<string>* names, int line, string color, int delay){
+    sleep_for(chrono::milliseconds(delay));
+    cout << "\033[" << (line + 1) << ";100H" << color << (*names)[line]; cout.flush();
 }
